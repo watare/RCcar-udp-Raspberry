@@ -1,14 +1,8 @@
 # RCcar-udp-Raspberry
-A projet to build an RC car with a raspberry PI and control it other wifi
+A projet to build an RC car with a raspberry PI and control it other wifi (UDP connexion)
 
-work in progress; should provide detial instructions when the first part of the project is down
+the code for the raspberry works however there is no makefile available yet.
 
-what is available so far:
+the code for the remote works however there is no make file available yet.
 
-an udp server
 
-next step
-
--put the remote control code on git (I need to clean it)
--map the gpio using pigpio
--create a Makefile

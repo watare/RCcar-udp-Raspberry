@@ -1,72 +1,87 @@
-
-#include "../inc/thread_raspberry_car.h"
-
 #include <stdio.h>
 #include <stdlib.h>
+#include "raspberry_car_structures.h"
 #include <pthread.h>
 #include <unistd.h>
 
+
+#include <pigpio.h>
+
+
+#define DROITE 3
+#define GAUCHE 4
+
+#define AVANT 17
+#define ARRIERE 27
+// liste des fonctions utilisees dans le projet
 //fonction donnant la direction de deplacement de la voiture
-void dirigerVoiture(int direction,struct RaspGpio* p_s_gpio){
+void direction_voiture(int direction,struct Gpio* gpio){
 //Les numero et valeurs des GPIO devront etre remplace par les valeurs effectivement utilisees
 
     switch(direction){
         case 0:
             printf("la voiture va tout droit! \n");
-            (*p_s_gpio).numero=0;
-            (*p_s_gpio).valeur=0;
+            //(*gpio).numero=0;
+            //(*gpio).valeur=0;
+            if (gpioGetPWMdutycycle(DROITE)!=0) gpioPWM(DROITE,0);
+            if (gpioGetPWMdutycycle(GAUCHE)!=0) gpioPWM(GAUCHE,0);
+
         break;
 
         case 1:
             printf("la voiture va à droite! \n");
-            (*p_s_gpio).numero=0;
-            (*p_s_gpio).valeur=1;
+            //(*gpio).numero=0;
+            //(*gpio).valeur=1;
+            if (gpioGetPWMdutycycle(GAUCHE)!=0) gpioPWM(GAUCHE,0);
+            if (gpioGetPWMdutycycle(DROITE)!=255) gpioPWM(DROITE,255);
+
+
         break;
 
 
         case 2:
             printf("la voiture va à gauche! \n");
-            (*p_s_gpio).numero=0;
-            (*p_s_gpio).valeur=2;
+            if (gpioGetPWMdutycycle(DROITE)!=0) gpioPWM(DROITE,0);
+            if (gpioGetPWMdutycycle(GAUCHE)!=255) gpioPWM(GAUCHE,255);
         break;
 
         default:
             printf("erreur de direction! \n");
-            (*p_s_gpio).numero=0;
-            (*p_s_gpio).valeur=0;
+            if (gpioGetPWMdutycycle(DROITE)!=0) gpioPWM(DROITE,0);
+            if (gpioGetPWMdutycycle(GAUCHE)!=0) gpioPWM(GAUCHE,0);
 
     };
 
 
 };
 
-void avancerVoiture(int sens,struct RaspGpio* p_s_gpio){
+void sens_voiture(int sens,struct Gpio* gpio){
 //Les numero et valeurs des GPIO devront etre remplace par les valeurs effectivement utilisees
 
     switch(sens){
         case 0:
-            //printf("la voiture n'avance pas! \n");
-            (*p_s_gpio).numero=10;
-            (*p_s_gpio).valeur=0;
+            printf("la voiture n'avance pas! \n");
+            if (gpioGetPWMdutycycle(AVANT)!=0) gpioPWM(AVANT,0);
+            if (gpioGetPWMdutycycle(ARRIERE)!=0) gpioPWM(ARRIERE,0);
         break;
 
         case 1:
-            //printf("la voiture avance! \n");
-            (*p_s_gpio).numero=10;
-            (*p_s_gpio).valeur=1;
+            printf("la voiture avance! \n");
+            if (gpioGetPWMdutycycle(ARRIERE)!=0) gpioPWM(ARRIERE,0);
+            if (gpioGetPWMdutycycle(AVANT)!=255) gpioPWM(AVANT,255);
         break;
 
 
         case 2:
-            //printf("la voiture recule! \n");
-            (*p_s_gpio).numero=10;
-            (*p_s_gpio).valeur=2;
+            printf("la voiture recule! \n");
+            if (gpioGetPWMdutycycle(AVANT)!=0) gpioPWM(AVANT,0);
+            if (gpioGetPWMdutycycle(ARRIERE)!=255) gpioPWM(ARRIERE,255);
         break;
 
         default:
-            //printf("je ne sais pas quoi faire! \n");
-            (*p_s_gpio).numero=10;
-            (*p_s_gpio).valeur=0;
+            printf("je ne sais pas quoi faire! \n");
+            if (gpioGetPWMdutycycle(AVANT)!=0) gpioPWM(AVANT,0);
+            if (gpioGetPWMdutycycle(ARRIERE)!=0) gpioPWM(ARRIERE,0);
 
     };
 
@@ -74,11 +89,17 @@ void avancerVoiture(int sens,struct RaspGpio* p_s_gpio){
 };
 
 //combinaison de deplacement
-void* conduireVoiture(void* arg){
+void* deplacement(void* arg){
 
     DeplacementVoiture* deplacement = malloc(sizeof(DeplacementVoiture));
     deplacement = arg;
-    struct RaspGpio* p_s_gpio = malloc(sizeof(RaspGpio));
+    struct Gpio* gpio = malloc(sizeof(Gpio));
+
+    if (gpioInitialise() < 0) return -1;
+    gpioPWM(3,0);
+    gpioPWM(4,0);
+    gpioPWM(17,0);
+    gpioPWM(27,0);
 
     while(1){
 
@@ -96,8 +117,8 @@ void* conduireVoiture(void* arg){
         //printf("%i",direction);
 
         //envoi des commandes sur les sorties phyisques
-        dirigerVoiture(direction,p_s_gpio);
-        avancerVoiture(sens,p_s_gpio);
+        direction_voiture(direction,gpio);
+        sens_voiture(sens,gpio);
 
         pthread_mutex_lock(&(*deplacement).mutex);
         //RAZ des commandes reçues
@@ -112,4 +133,3 @@ void* conduireVoiture(void* arg){
     };
     pthread_exit(NULL);
 };
-

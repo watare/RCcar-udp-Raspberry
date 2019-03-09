@@ -1,5 +1,4 @@
 #ifndef STRUCTURES_VOITURE_H_INCLUDED
-
 #define STRUCTURES_VOITURE_H_INCLUDED
 //fichier contenant les differentes structures crées pour le projet
 

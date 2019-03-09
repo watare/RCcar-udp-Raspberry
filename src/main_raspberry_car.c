@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "thread_serveur_udp.h"
-#include "raspberry_car_structures.h"
-#include "thread_raspberry_car.h"
+#include "inc/../thread_serveur_udp.h"
+#include "inc/../raspberry_car_structures.h"
+#include "inc/../thread_raspberry_car.h"
 
 
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "inc/../raspberry_car_structures.h"
+#include "../inc/raspberry_car_structures.h"
 #include <pthread.h>
 #include <unistd.h>
 

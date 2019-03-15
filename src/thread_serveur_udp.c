@@ -12,7 +12,7 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <pthread.h>
-#include "inc/../raspberry_car_structures.h"
+#include "../inc/raspberry_car_structures.h"
 //fonction error
 void error(const char *msg)
 {
